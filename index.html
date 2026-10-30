@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Крой</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --text:#1c1433; --muted:#62597a; --brand:#5b2be0; --on-brand:#fff; --accent:#ffd23f; --line:rgba(60,40,120,.16);
+  --surface:rgba(255,255,255,.86); --glass:rgba(255,255,255,.72); --field:#f4f1ff;
+  --bg: radial-gradient(55rem 40rem at 0% 0%,#ffc9e2 0,transparent 60%),
+        radial-gradient(50rem 40rem at 100% 5%,#bfe3ff 0,transparent 60%),
+        radial-gradient(55rem 45rem at 85% 100%,#fff0a8 0,transparent 60%),
+        radial-gradient(50rem 40rem at 0% 100%,#bff3d6 0,transparent 60%),#f6f2ff;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --text:#f1ecff; --muted:#aaa1c4; --brand:#a58bff; --on-brand:#14092b; --line:rgba(190,170,255,.2);
+    --surface:rgba(30,24,52,.85); --glass:rgba(22,17,40,.75); --field:#2a2247;
+    --bg: radial-gradient(55rem 40rem at 0% 0%,#4b1a63 0,transparent 60%),
+          radial-gradient(50rem 40rem at 100% 5%,#0c3a56 0,transparent 60%),
+          radial-gradient(55rem 45rem at 85% 100%,#5a2a3f 0,transparent 60%),
+          radial-gradient(50rem 40rem at 0% 100%,#0f4535 0,transparent 60%),#0f0c1c; }
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Onest,system-ui,sans-serif;background:var(--bg) fixed;color:var(--text);line-height:1.5;min-height:100vh}
+button,select,input,textarea{font:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+header{position:sticky;top:0;z-index:5;background:var(--glass);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{max-width:1100px;margin:auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:1.5rem;letter-spacing:-.02em}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:8px 16px;font-weight:600}
+.btn.main{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.btn b{background:var(--accent);color:#1c1433;border-radius:999px;padding:1px 9px;margin-left:6px}
+.hero{max-width:1100px;margin:auto;padding:52px 20px 24px}
+.hero h1{font-size:clamp(2.2rem,7vw,4.6rem);line-height:1;letter-spacing:-.035em;margin:0 0 14px;font-weight:800;max-width:14ch}
+.hero p{color:var(--muted);max-width:48ch;margin:0;font-size:1.1rem}
+.filters{max-width:1100px;margin:auto;padding:12px 20px;display:flex;gap:8px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 16px}
+.filters button[aria-pressed="true"]{background:var(--text);color:var(--field);border-color:var(--text)}
+.grid{max-width:1100px;margin:auto;padding:12px 20px 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:20px}
+.card{background:var(--surface);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--line)}
+.pic{position:relative;aspect-ratio:1;display:grid;place-items:center;font-size:4.2rem}
+.pic img{width:100%;height:100%;object-fit:cover}
+.badge{position:absolute;top:10px;left:10px;background:#1c1433;color:#ffd23f;font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:999px}
+.info{padding:14px 16px 16px;display:flex;flex-direction:column;gap:4px;flex:1}
+.info h3{margin:0;font-size:1.05rem}
+.info p{margin:0;color:var(--muted);font-size:.9rem;flex:1}
+.fld,.size{padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--text);width:100%}
+.size{margin-top:8px}
+.row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px}
+.price{font-weight:800;font-size:1.15rem}
+.add{background:var(--accent);color:#1c1433;border:0;border-radius:8px;padding:8px 14px;font-weight:700}
+.del{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:.85rem;padding:6px 0 0;text-align:left}
+.shade{position:fixed;inset:0;background:rgba(10,5,30,.5);display:none;z-index:9}
+.shade.open{display:block}
+aside{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--surface);backdrop-filter:blur(14px);z-index:10;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}
+aside.open{transform:none}
+.ah{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}
+.ah h2{margin:0;font-size:1.2rem}
+.x{background:none;border:0;color:var(--text);font-size:1.6rem;line-height:1}
+.items{flex:1;overflow:auto;padding:8px 20px}
+.empty{color:var(--muted);padding:30px 0}
+.it{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.it small{color:var(--muted)}
+.qty{display:flex;align-items:center;gap:8px;grid-column:1/-1;margin-top:4px}
+.qty button{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);background:var(--field);color:var(--text)}
+.foot{padding:16px 20px;border-top:1px solid var(--line);display:grid;gap:10px}
+.total{display:flex;justify-content:space-between;font-weight:800;font-size:1.15rem}
+.order{background:var(--brand);color:var(--on-brand);border:0;border-radius:10px;padding:13px;font-weight:700}
+.order:disabled{opacity:.4;cursor:not-allowed}
+.note{font-size:.82rem;color:var(--muted);margin:0}
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--text);padding:0;width:min(420px,92vw);backdrop-filter:blur(14px)}
+dialog::backdrop{background:rgba(10,5,30,.55)}
+dialog form,.dbody{padding:22px;display:grid;gap:10px}
+dialog h2{margin:0 0 4px;font-size:1.3rem}
+.tabs{display:flex;gap:6px}
+.tabs button{flex:1;border:1px solid var(--line);background:var(--field);color:var(--text);border-radius:8px;padding:8px}
+.tabs button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.err{color:#d6336c;font-size:.88rem;min-height:1.2em;margin:0}
+footer{text-align:center;color:var(--muted);padding:30px 20px;border-top:1px solid var(--line);font-size:.9rem;background:var(--glass)}
+@media (prefers-reduced-motion: reduce){aside{transition:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <div class="logo" id="shopName"></div>
+    <div class="acts">
+      <button class="btn" id="sellBtn">Продать вещь</button>
+      <button class="btn" id="accBtn">Войти</button>
+      <button class="btn main" id="openCart">Корзина <b id="count">0</b></button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <h1 id="heroTitle"></h1>
+  <p id="heroText"></p>
+</section>
+
+<nav class="filters" id="filters" aria-label="Категории"></nav>
+<main class="grid" id="grid"></main>
+<footer id="footer"></footer>
+
+<!-- Вход / регистрация -->
+<dialog id="authDlg">
+  <form id="authForm" method="dialog" onsubmit="return false">
+    <h2 id="authTitle">Вход</h2>
+    <div class="tabs"><button type="button" id="tabIn" aria-pressed="true">Войти</button><button type="button" id="tabUp" aria-pressed="false">Регистрация</button></div>
+    <input class="fld" id="aName" placeholder="Имя" autocomplete="name" hidden>
+    <input class="fld" id="aMail" type="email" placeholder="Эл. почта" autocomplete="email" required>
+    <input class="fld" id="aPass" type="password" placeholder="Пароль (от 6 символов)" autocomplete="current-password" required minlength="6">
+    <p class="err" id="aErr"></p>
+    <button class="order" id="aGo">Войти</button>
+    <button class="btn" type="button" data-close>Отмена</button>
+    <p class="note">Демо-режим: аккаунт хранится только в этом браузере.</p>
+  </form>
+</dialog>
+
+<dialog id="meDlg">
+  <div class="dbody">
+    <h2 id="meName"></h2>
+    <p class="note" id="meMail"></p>
+    <button class="order" id="logout">Выйти из аккаунта</button>
+    <button class="btn" data-close>Закрыть</button>
+  </div>
+</dialog>
+
+<!-- Продажа б/у -->
+<dialog id="sellDlg">
+  <form id="sellForm" method="dialog" onsubmit="return false">
+    <h2>Продать б/у вещь</h2>
+    <input class="fld" id="sTitle" placeholder="Название, например: Куртка Zara" required>
+    <select class="fld" id="sCat"></select>
+    <input class="fld" id="sSize" placeholder="Размер (M, 42, 32…)" required>
+    <input class="fld" id="sPrice" type="number" min="1" placeholder="Цена, ₽" required>
+    <select class="fld" id="sCond">
+      <option>Как новое</option><option selected>Отличное</option><option>Хорошее</option><option>Есть следы носки</option>
+    </select>
+    <textarea class="fld" id="sDesc" rows="2" placeholder="Описание (необязательно)"></textarea>
+    <label class="note">Фото <input id="sPhoto" type="file" accept="image/*"></label>
+    <p class="err" id="sErr"></p>
+    <button class="order" id="sGo">Разместить</button>
+    <button class="btn" type="button" data-close>Отмена</button>
+    <p class="note">Демо-режим: объявление видно только на этом устройстве.</p>
+  </form>
+</dialog>
+
+<!-- Корзина -->
+<div class="shade" id="shade"></div>
+<aside id="cart" aria-label="Корзина">
+  <div class="ah"><h2>Ваш заказ</h2><button class="x" id="closeCart" aria-label="Закрыть">×</button></div>
+  <div class="items" id="items"></div>
+  <div class="foot">
+    <div class="total"><span>Итого</span><span id="total"></span></div>
+    <input class="fld" id="name" placeholder="Ваше имя" autocomplete="name">
+    <input class="fld" id="contact" placeholder="Телефон или Telegram" autocomplete="tel">
+    <button class="order" id="orderBtn" disabled>Отправить заказ</button>
+    <p class="note">Заказ откроется в Telegram с готовым текстом. Оплату и доставку вы согласуете с продавцом.</p>
+  </div>
+</aside>
+
+<script>
+/* ============ НАСТРОЙКИ — меняйте только этот блок ============ */
+const SHOP = {
+  name: "Крой",
+  heroTitle: "Новая и б/у одежда любимых брендов",
+  heroText: "Оригинальные вещи и проверенный секонд-хенд. Обмен в течение 14 дней, если размер не подошёл.",
+  telegram: "your_username",        // ваш ник в Telegram без @
+  footer: "© 2026 Крой · Бренды в названиях принадлежат их владельцам"
+};
+
+// used: true — б/у (на карточке будет метка «Б/у»). sizes: [] — размер не нужен.
+// img: путь к вашему фото (например "img/levis.jpg"). Пусто — покажется эмодзи.
+// Цены ниже — примеры, поставьте свои.
+const PRODUCTS = [
+  { id: 1, name: "Levi's 501 Original",         cat: "Джинсы",   price: 8900,  emoji: "👖", color: "#c8d3f6", desc: "Классика прямого кроя",     sizes: ["28","30","32","34"],   img: "" },
+  { id: 2, name: "Nike Club Fleece худи",       cat: "Верхняя",  price: 7500,  emoji: "🧥", color: "#ffd0c2", desc: "Мягкий футер с начёсом",    sizes: ["S","M","L","XL"],      img: "" },
+  { id: 3, name: "Adidas Samba",                cat: "Обувь",    price: 10900, emoji: "👟", color: "#c7f0d8", desc: "Кожа, резиновая подошва",   sizes: ["39","40","41","42","43","44"], img: "" },
+  { id: 4, name: "The North Face Nuptse",       cat: "Верхняя",  price: 28900, emoji: "🧥", color: "#ffe9a6", desc: "Пуховая куртка",            sizes: ["S","M","L","XL"],      img: "" },
+  { id: 5, name: "Carhartt WIP футболка",       cat: "Футболки", price: 3900,  emoji: "👕", color: "#e2cdf7", desc: "Плотный хлопок",            sizes: ["S","M","L","XL"],      img: "" },
+  { id: 6, name: "Levi's 501 (б/у)",            cat: "Джинсы",   price: 3500,  emoji: "👖", color: "#c8d3f6", desc: "Состояние: хорошее. Без дефектов", sizes: ["32"], used: true, img: "" },
+  { id: 7, name: "Carhartt Detroit куртка (б/у)", cat: "Верхняя", price: 9800, emoji: "🧥", color: "#f3dcb8", desc: "Состояние: отличное",       sizes: ["L"],  used: true, img: "" },
+  { id: 8, name: "Nike Air Force 1 (б/у)",      cat: "Обувь",    price: 4500,  emoji: "👟", color: "#d7f0ff", desc: "Состояние: хорошее. Стелька заменена", sizes: ["42"], used: true, img: "" },
+  { id: 9, name: "Платье Zara миди (б/у)",      cat: "Платья",   price: 1500,  emoji: "👗", color: "#ffc9e2", desc: "Состояние: как новое",      sizes: ["M"],  used: true, img: "" }
+];
+/* ============================================================== */
+
+const $ = id => document.getElementById(id);
+const money = n => Number(n).toLocaleString("ru-RU") + " ₽";
+const lsGet = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+
+let cart = lsGet("cart3", {});
+let users = lsGet("users", {});
+let me = lsGet("me", null);
+let listings = lsGet("listings", []);
+let activeCat = "Все";
+
+const all = () => [...listings, ...PRODUCTS];
+
+document.title = SHOP.name;
+$("shopName").textContent = SHOP.name;
+$("heroTitle").textContent = SHOP.heroTitle;
+$("heroText").textContent = SHOP.heroText;
+$("footer").textContent = SHOP.footer;
+
+/* ---------- каталог ---------- */
+function renderFilters() {
+  const cats = ["Все", "Новое", "Б/у", ...new Set(all().map(p => p.cat))];
+  $("filters").innerHTML = "";
+  cats.forEach(c => {
+    const b = document.createElement("button");
+    b.textContent = c;
+    b.setAttribute("aria-pressed", c === activeCat);
+    b.onclick = () => { activeCat = c; renderFilters(); renderGrid(); };
+    $("filters").appendChild(b);
+  });
+  $("sCat").innerHTML = [...new Set(all().map(p => p.cat))].map(c => `<option>${c}</option>`).join("");
+}
+
+function shown(p) {
+  return activeCat === "Все" || p.cat === activeCat ||
+    (activeCat === "Новое" && !p.used) || (activeCat === "Б/у" && p.used);
+}
+
+function renderGrid() {
+  $("grid").innerHTML = "";
+  all().filter(shown).forEach(p => {
+    const el = document.createElement("article");
+    el.className = "card";
+    el.innerHTML = `
+      <div class="pic" style="background:${p.color}">${p.used ? '<span class="badge">Б/у</span>' : ""}${p.img ? `<img alt="" loading="lazy">` : p.emoji}</div>
+      <div class="info">
+        <h3></h3><p></p>
+        ${p.sizes.length ? `<select class="size" aria-label="Размер">${p.sizes.map(z => `<option></option>`).join("")}</select>` : ""}
+        <div class="row"><span class="price">${money(p.price)}</span><button class="add">В корзину</button></div>
+        ${p.seller && p.seller === me ? '<button class="del">Снять с продажи</button>' : ""}
+      </div>`;
+    el.querySelector("h3").textContent = p.name;
+    el.querySelector("p").textContent = p.desc;
+    if (p.img) { const im = el.querySelector("img"); im.src = p.img; im.alt = p.name; }
+    const sel = el.querySelector(".size");
+    if (sel) [...sel.options].forEach((o, i) => { o.textContent = o.value = p.sizes[i]; });
+    el.querySelector(".add").onclick = () => change(p.id + "|" + (sel ? sel.value : ""), 1);
+    const del = el.querySelector(".del");
+    if (del) del.onclick = () => { listings = listings.filter(x => x.id !== p.id); lsSet("listings", listings); renderFilters(); renderGrid(); renderCart(); };
+    $("grid").appendChild(el);
+  });
+}
+
+/* ---------- корзина ---------- */
+function change(key, d) {
+  cart[key] = (cart[key] || 0) + d;
+  if (cart[key] <= 0) delete cart[key];
+  lsSet("cart3", cart); renderCart();
+}
+
+function renderCart() {
+  const keys = Object.keys(cart);
+  let total = 0, count = 0;
+  $("items").innerHTML = keys.length ? "" : '<p class="empty">Корзина пуста. Добавьте что-нибудь из каталога.</p>';
+  keys.forEach(key => {
+    const [pid, size] = key.split("|");
+    const p = all().find(x => String(x.id) === pid);
+    if (!p) { delete cart[key]; return; }
+    total += p.price * cart[key]; count += cart[key];
+    const row = document.createElement("div");
+    row.className = "it";
+    row.innerHTML = `<strong></strong><span>${money(p.price * cart[key])}</span>
+      <small></small>
+      <div class="qty"><button aria-label="Меньше">−</button><span>${cart[key]}</span><button aria-label="Больше">+</button></div>`;
+    row.querySelector("strong").textContent = p.name;
+    row.querySelector("small").textContent = (p.used ? "Б/у" : "Новое") + (size ? " · размер " + size : "");
+    const [minus, plus] = row.querySelectorAll("button");
+    minus.onclick = () => change(key, -1);
+    plus.onclick = () => change(key, 1);
+    $("items").appendChild(row);
+  });
+  $("count").textContent = count;
+  $("total").textContent = money(total);
+  $("orderBtn").disabled = !count;
+}
+
+function toggleCart(open) {
+  $("cart").classList.toggle("open", open);
+  $("shade").classList.toggle("open", open);
+  if (open && me && users[me]) { $("name").value ||= users[me].name; }
+}
+$("openCart").onclick = () => toggleCart(true);
+$("closeCart").onclick = $("shade").onclick = () => toggleCart(false);
+document.addEventListener("keydown", e => { if (e.key === "Escape") toggleCart(false); });
+
+$("orderBtn").onclick = () => {
+  const lines = Object.keys(cart).map(key => {
+    const [pid, size] = key.split("|");
+    const p = all().find(x => String(x.id) === pid);
+    return `• ${p.name}${p.used ? " [б/у]" : ""}${size ? " (" + size + ")" : ""} × ${cart[key]} = ${money(p.price * cart[key])}`;
+  });
+  const text = `Новый заказ\n${lines.join("\n")}\nИтого: ${$("total").textContent}\n\nИмя: ${$("name").value || "—"}\nКонтакт: ${$("contact").value || "—"}`;
+  window.open(`https://t.me/${SHOP.telegram}?text=${encodeURIComponent(text)}`, "_blank");
+};
+
+/* ---------- аккаунт (демо, без сервера) ---------- */
+document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest("dialog").close());
+async function sha(t) {
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
+  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
+}
+let signup = false;
+function setMode(up) {
+  signup = up;
+  $("tabIn").setAttribute("aria-pressed", !up); $("tabUp").setAttribute("aria-pressed", up);
+  $("aName").hidden = !up; $("aName").required = up;
+  $("authTitle").textContent = up ? "Регистрация" : "Вход";
+  $("aGo").textContent = up ? "Создать аккаунт" : "Войти";
+  $("aPass").autocomplete = up ? "new-password" : "current-password";
+  $("aErr").textContent = "";
+}
+$("tabIn").onclick = () => setMode(false);
+$("tabUp").onclick = () => setMode(true);
+
+function renderAcc() { $("accBtn").textContent = me && users[me] ? users[me].name : "Войти"; }
+$("accBtn").onclick = () => {
+  if (me && users[me]) { $("meName").textContent = users[me].name; $("meMail").textContent = me; $("meDlg").showModal(); }
+  else { setMode(false); $("authDlg").showModal(); }
+};
+$("logout").onclick = () => { me = null; lsSet("me", null); $("meDlg").close(); renderAcc(); renderGrid(); };
+
+$("aGo").onclick = async () => {
+  const mail = $("aMail").value.trim().toLowerCase(), pass = $("aPass").value, name = $("aName").value.trim();
+  if (!/^\S+@\S+\.\S+$/.test(mail)) return $("aErr").textContent = "Введите корректную почту.";
+  if (pass.length < 6) return $("aErr").textContent = "Пароль должен быть не короче 6 символов.";
+  if (!crypto.subtle) return $("aErr").textContent = "Откройте сайт по https://, иначе вход не работает.";
+  const h = await sha(pass);
+  if (signup) {
+    if (!name) return $("aErr").textContent = "Укажите имя.";
+    if (users[mail]) return $("aErr").textContent = "Такая почта уже зарегистрирована. Нажмите «Войти».";
+    users[mail] = { name, h }; lsSet("users", users);
+  } else if (!users[mail] || users[mail].h !== h) {
+    return $("aErr").textContent = "Неверная почта или пароль.";
+  }
+  me = mail; lsSet("me", me);
+  $("authDlg").close(); $("aPass").value = "";
+  renderAcc(); renderGrid();
+  if (pendingSell) { pendingSell = false; $("sellDlg").showModal(); }
+};
+
+/* ---------- размещение б/у ---------- */
+let pendingSell = false;
+$("sellBtn").onclick = () => {
+  if (!me) { pendingSell = true; setMode(false); $("authDlg").showModal(); return; }
+  $("sErr").textContent = ""; $("sellDlg").showModal();
+};
+
+function readPhoto(file) {   // уменьшаем фото, чтобы оно поместилось в память браузера
+  return new Promise(res => {
+    if (!file) return res("");
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, 600 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = img.width * k; c.height = img.height * k;
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); res(c.toDataURL("image/jpeg", .7));
+    };
+    img.onerror = () => res("");
+    img.src = url;
+  });
+}
+
+$("sGo").onclick = async () => {
+  const title = $("sTitle").value.trim(), size = $("sSize").value.trim(), price = parseInt($("sPrice").value, 10);
+  if (!title || !size || !(price > 0)) return $("sErr").textContent = "Заполните название, размер и цену.";
+  const img = await readPhoto($("sPhoto").files[0]);
+  const extra = $("sDesc").value.trim();
+  const item = {
+    id: "u" + Date.now(), name: title + " (б/у)", cat: $("sCat").value, price,
+    emoji: "👕", color: "#e9defa", sizes: [size], used: true, seller: me, img,
+    desc: "Состояние: " + $("sCond").value.toLowerCase() + (extra ? ". " + extra : "")
+  };
+  listings = [item, ...listings];
+  if (!lsSet("listings", listings)) {
+    listings.shift();
+    return $("sErr").textContent = "Не хватило места в браузере. Попробуйте фото поменьше.";
+  }
+  $("sellForm").reset(); $("sellDlg").close();
+  activeCat = "Б/у"; renderFilters(); renderGrid();
+};
+
+renderAcc(); renderFilters(); renderGrid(); renderCart();
+</script>
+</body>
+</html>
